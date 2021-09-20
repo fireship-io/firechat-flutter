@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_print
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firechat/auth_provider.dart';
 import 'package:firechat/landing_screen.dart';
@@ -26,12 +24,14 @@ class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      // Flutterfire init
+      // Flutterfire
       future: _initialization,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          print(snapshot.error);
-          return Center(child: Text('$snapshot.error'));
+          // print(snapshot.error);
+          return Center(
+            child: Text('$snapshot.error'),
+          );
         }
         if (snapshot.connectionState == ConnectionState.done) {
           return const MyApp();

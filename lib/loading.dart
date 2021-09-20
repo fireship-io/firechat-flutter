@@ -11,7 +11,9 @@ class Loading extends StatelessWidget {
       color: Colors.black.withOpacity(0.50),
       child: const Center(
         child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(themeColor),
+          valueColor: AlwaysStoppedAnimation<Color>(
+            Color(0xffff9800),
+          ),
           strokeWidth: 5.0,
           color: themeColor,
           value: null,

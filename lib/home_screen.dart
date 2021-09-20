@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firechat/auth_provider.dart';
 import 'package:firechat/bottom_chat_bar.dart';
+import 'package:flutter/material.dart';
 import 'package:firechat/loading.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:firechat/styles.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
@@ -29,19 +29,19 @@ class HomeScreen extends StatelessWidget {
               return TextButton(
                 child: const Text(
                   'Sign out',
-                  style: TextStyle(
-                    color: Colors.black,
-                  ),
+                  style: blackText,
                 ),
                 onPressed: () {
                   final provider = Provider.of<AuthProvider>(
                     context,
                     listen: false,
                   );
+
                   provider.signOut();
+
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('User was signed out!'),
+                      content: Text('User was signed out'),
                     ),
                   );
                 },
@@ -51,7 +51,7 @@ class HomeScreen extends StatelessWidget {
         ],
       ),
       body: Container(
-        padding: const EdgeInsets.all(2.0),
+        padding: const EdgeInsets.all(4.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           mainAxisSize: MainAxisSize.max,
@@ -77,7 +77,7 @@ class _ChatsState extends State<Chats> {
   final Stream<QuerySnapshot> _chatsStream = FirebaseFirestore.instance
       .collection('chats')
       .orderBy('createdAt', descending: false)
-      .limit(25)
+      .limit(15)
       .snapshots();
 
   @override
@@ -88,11 +88,15 @@ class _ChatsState extends State<Chats> {
         if (snapshot.hasError) {
           return Center(child: Text('$snapshot.error'));
         }
+
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Loading();
         }
+
         return Flexible(
+          // Flexible prevents overflow error when keyboard is opened
           child: GestureDetector(
+            // Close the keyboard if anything else is tapped
             onTap: () {
               FocusScopeNode currentFocus = FocusScope.of(context);
               if (!currentFocus.hasPrimaryFocus) {
@@ -104,11 +108,13 @@ class _ChatsState extends State<Chats> {
               scrollDirection: Axis.vertical,
               children: snapshot.data!.docs.map(
                 (DocumentSnapshot doc) {
-                  // Get both data and the doc Id
+                  // Doc id
+                  String id = doc.id;
+                  // Chat data
                   Map<String, dynamic> data =
                       doc.data()! as Map<String, dynamic>;
-                  String id = doc.id; // Id
 
+                  // Chats sent by the current user
                   if (user?.uid == data['owner']) {
                     return Container(
                       padding: const EdgeInsets.all(4.0),
@@ -116,20 +122,18 @@ class _ChatsState extends State<Chats> {
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          const SizedBox(),
+                          const SizedBox(), // Dynamic width spacer
                           Container(
-                            constraints: const BoxConstraints(maxWidth: 310.0),
+                            constraints: chatConstraints,
                             padding: const EdgeInsets.only(
-                              left: 8.0,
-                              top: 4.0,
-                              bottom: 4.0,
-                              right: 4.0,
+                              left: 10.0,
+                              top: 5.0,
+                              bottom: 5.0,
+                              right: 5.0,
                             ),
                             decoration: const BoxDecoration(
-                              gradient: LinearGradient(
-                                  colors: [Colors.orange, Colors.orangeAccent]),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(40)),
+                              gradient: sent,
+                              borderRadius: round,
                             ),
                             child: GestureDetector(
                               onTap: () => deleteMessage(id),
@@ -140,18 +144,15 @@ class _ChatsState extends State<Chats> {
                                     child: Text(
                                       data['text'],
                                       textAlign: TextAlign.right,
-                                      style: const TextStyle(
-                                        color: Colors.black87,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w500,
-                                      ),
+                                      style: chatText,
                                     ),
                                   ),
                                   const SizedBox(width: 10.0),
                                   CircleAvatar(
                                     radius: 20,
-                                    backgroundImage:
-                                        NetworkImage(data['imageUrl']),
+                                    backgroundImage: NetworkImage(
+                                      data['imageUrl'],
+                                    ),
                                   ),
                                 ],
                               ),
@@ -161,6 +162,7 @@ class _ChatsState extends State<Chats> {
                       ),
                     );
                   } else {
+                    // Chats sent by everyone else
                     return Container(
                       padding: const EdgeInsets.all(4.0),
                       child: Row(
@@ -168,7 +170,7 @@ class _ChatsState extends State<Chats> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Container(
-                            constraints: const BoxConstraints(maxWidth: 310.0),
+                            constraints: chatConstraints,
                             padding: const EdgeInsets.only(
                               left: 5.0,
                               top: 5.0,
@@ -176,37 +178,30 @@ class _ChatsState extends State<Chats> {
                               right: 10.0,
                             ),
                             decoration: const BoxDecoration(
-                              gradient: LinearGradient(colors: [
-                                Colors.lightBlue,
-                                Colors.lightBlueAccent
-                              ]),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(40)),
+                              gradient: received,
+                              borderRadius: round,
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 CircleAvatar(
                                   radius: 20,
-                                  backgroundImage:
-                                      NetworkImage(data['imageUrl']),
+                                  backgroundImage: NetworkImage(
+                                    data['imageUrl'],
+                                  ),
                                 ),
                                 const SizedBox(width: 10.0),
                                 Flexible(
                                   child: Text(
                                     data['text'],
                                     textAlign: TextAlign.left,
-                                    style: const TextStyle(
-                                      color: Colors.black87,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w500,
-                                    ),
+                                    style: chatText,
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                          const SizedBox(),
+                          const SizedBox(), // Dynamic width spacer
                         ],
                       ),
                     );
@@ -236,7 +231,7 @@ class _ChatsState extends State<Chats> {
                     'Message deleted',
                   ),
                   duration: Duration(
-                    seconds: 3,
+                    seconds: 2,
                   ),
                 ),
               ),
@@ -244,9 +239,7 @@ class _ChatsState extends State<Chats> {
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              '$e',
-            ),
+            content: Text('$e'),
             duration: const Duration(
               seconds: 3,
             ),

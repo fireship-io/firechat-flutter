@@ -8,7 +8,6 @@ class AuthProvider extends ChangeNotifier {
   GoogleSignInAccount? _user;
   GoogleSignInAccount get user => _user!;
 
-  // Handle log in
   Future<void> googleLogin() async {
     try {
       final googleUser = await GoogleSignIn().signIn();
@@ -18,7 +17,6 @@ class AuthProvider extends ChangeNotifier {
       _user = googleUser;
 
       final googleAuth = await googleUser.authentication;
-
       final authCredential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,

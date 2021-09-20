@@ -1,9 +1,8 @@
-// ignore_for_file: unnecessary_null_comparison, avoid_print
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firechat/auth_provider.dart';
 import 'package:firechat/home_screen.dart';
 import 'package:firechat/loading.dart';
+import 'package:firechat/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -21,10 +20,11 @@ class LandingScreen extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Loading();
           } else if (snapshot.hasError) {
-            // Something is broken
-            return const Center(child: Text("Something went wrong!"));
+            return const Center(
+              child: Text("Something went wrong!"),
+            );
           } else if (snapshot.hasData) {
-            // Home (chat) screen
+            // Home (chats) screen
             return const HomeScreen();
           } else {
             // Login component
@@ -37,20 +37,20 @@ class LandingScreen extends StatelessWidget {
                   child: ElevatedButton(
                     child: Row(
                       children: const [
-                        Icon(Icons.login, size: 30.0),
+                        Icon(
+                          Icons.login,
+                          size: 30.0,
+                        ),
                         SizedBox(width: 10.0),
                         Text(
                           "GOOGLE SIGN IN",
                           textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style: googleText,
                         ),
                       ],
                     ),
-                    // Handle sign in
                     onPressed: () {
+                      // Handle sign in
                       final provider = Provider.of<AuthProvider>(
                         context,
                         listen: false,
