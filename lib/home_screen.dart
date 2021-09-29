@@ -48,9 +48,9 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           mainAxisSize: MainAxisSize.max,
-          children: const [
+          children: [
             Chats(),
-            BottomChatBar(),
+            const BottomChatBar(),
           ],
         ),
       ),
@@ -58,20 +58,15 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-class Chats extends StatefulWidget {
-  const Chats({Key? key}) : super(key: key);
-
-  @override
-  _ChatsState createState() => _ChatsState();
-}
-
-class _ChatsState extends State<Chats> {
+class Chats extends StatelessWidget {
   final user = FirebaseAuth.instance.currentUser;
   final Stream<QuerySnapshot> _chatsStream = FirebaseFirestore.instance
       .collection('chats')
       .orderBy('createdAt', descending: false)
       .limit(15)
       .snapshots();
+
+  Chats({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
