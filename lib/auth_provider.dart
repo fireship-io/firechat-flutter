@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-class AuthProvider extends ChangeNotifier {
+class AuthProvider {
   final googleSignIn = GoogleSignIn();
 
   GoogleSignInAccount? _user;
@@ -29,13 +29,10 @@ class AuthProvider extends ChangeNotifier {
         content: Text('Failed to sign in with Google: $e.message'),
       );
     }
-    notifyListeners();
   }
 
   Future<void> signOut() async {
     await GoogleSignIn().disconnect();
     await FirebaseAuth.instance.signOut();
-
-    notifyListeners();
   }
 }

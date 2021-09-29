@@ -32,12 +32,7 @@ class HomeScreen extends StatelessWidget {
                   style: blackText,
                 ),
                 onPressed: () {
-                  final provider = Provider.of<AuthProvider>(
-                    context,
-                    listen: false,
-                  );
-
-                  provider.signOut();
+         AuthProvider().signOut();
 
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(

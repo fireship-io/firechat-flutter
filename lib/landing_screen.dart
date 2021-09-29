@@ -51,11 +51,8 @@ class LandingScreen extends StatelessWidget {
                     ),
                     onPressed: () {
                       // Handle sign in
-                      final provider = Provider.of<AuthProvider>(
-                        context,
-                        listen: false,
-                      );
-                      provider.googleLogin();
+
+                      AuthProvider().googleLogin();
                     },
                   ),
                 ),

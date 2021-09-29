@@ -36,7 +36,7 @@ class _AppState extends State<App> {
         if (snapshot.connectionState == ConnectionState.done) {
           return const MyApp();
         }
-        return const Loading();
+        return const Text('loading...');
       },
     );
   }
@@ -46,14 +46,11 @@ class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => AuthProvider(),
-      child: MaterialApp(
-        title: 'Firechat',
-        debugShowCheckedModeBanner: false,
-        theme: themeStyle,
-        home: const LandingScreen(), // Main entry point for the app
-      ),
+    return MaterialApp(
+      title: 'Firechat',
+      debugShowCheckedModeBanner: false,
+      theme: themeStyle,
+      home: const LandingScreen(), // Main entry point for the app
     );
   }
 }
