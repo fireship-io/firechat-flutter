@@ -4,11 +4,9 @@ import 'package:firechat/auth_provider.dart';
 import 'package:firechat/bottom_chat_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:firechat/loading.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:firechat/styles.dart';
-import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
-import 'package:provider/provider.dart';
+
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -32,7 +30,7 @@ class HomeScreen extends StatelessWidget {
                   style: blackText,
                 ),
                 onPressed: () {
-         AuthProvider().signOut();
+                  AuthProvider().signOut();
 
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -111,95 +109,10 @@ class _ChatsState extends State<Chats> {
 
                   // Chats sent by the current user
                   if (user?.uid == data['owner']) {
-                    return Container(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          const SizedBox(), // Dynamic width spacer
-                          Container(
-                            constraints: chatConstraints,
-                            padding: const EdgeInsets.only(
-                              left: 10.0,
-                              top: 5.0,
-                              bottom: 5.0,
-                              right: 5.0,
-                            ),
-                            decoration: const BoxDecoration(
-                              gradient: sent,
-                              borderRadius: round,
-                            ),
-                            child: GestureDetector(
-                              onTap: () => deleteMessage(id),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Flexible(
-                                    child: Text(
-                                      data['text'],
-                                      textAlign: TextAlign.right,
-                                      style: chatText,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10.0),
-                                  CircleAvatar(
-                                    radius: 20,
-                                    backgroundImage: NetworkImage(
-                                      data['imageUrl'],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
+                    return SentMessage(data: data);
                   } else {
                     // Chats sent by everyone else
-                    return Container(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Container(
-                            constraints: chatConstraints,
-                            padding: const EdgeInsets.only(
-                              left: 5.0,
-                              top: 5.0,
-                              bottom: 5.0,
-                              right: 10.0,
-                            ),
-                            decoration: const BoxDecoration(
-                              gradient: received,
-                              borderRadius: round,
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                CircleAvatar(
-                                  radius: 20,
-                                  backgroundImage: NetworkImage(
-                                    data['imageUrl'],
-                                  ),
-                                ),
-                                const SizedBox(width: 10.0),
-                                Flexible(
-                                  child: Text(
-                                    data['text'],
-                                    textAlign: TextAlign.left,
-                                    style: chatText,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(), // Dynamic width spacer
-                        ],
-                      ),
-                    );
+                    return ReceivedMessage(data: data);
                   }
                 },
               ).toList(),
@@ -210,37 +123,117 @@ class _ChatsState extends State<Chats> {
     );
   }
 
-  void deleteMessage(id) async {
-    if (id == null) {
-      return;
-    } else {
-      try {
-        await FirebaseFirestore.instance
-            .collection("chats")
-            .doc(id)
-            .delete()
-            .then(
-              (value) => ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text(
-                    'Message deleted',
+
+}
+
+class SentMessage extends StatelessWidget {
+  const SentMessage({
+    Key? key,
+    required this.data,
+  }) : super(key: key);
+
+  final Map<String, dynamic> data;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(4.0),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          const SizedBox(), // Dynamic width spacer
+          Container(
+            constraints: chatConstraints,
+            padding: const EdgeInsets.only(
+              left: 10.0,
+              top: 5.0,
+              bottom: 5.0,
+              right: 5.0,
+            ),
+            decoration: const BoxDecoration(
+              gradient: sent,
+              borderRadius: round,
+            ),
+            child: GestureDetector(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Flexible(
+                    child: Text(
+                      data['text'],
+                      textAlign: TextAlign.right,
+                      style: chatText,
+                    ),
                   ),
-                  duration: Duration(
-                    seconds: 2,
+                  const SizedBox(width: 10.0),
+                  CircleAvatar(
+                    radius: 20,
+                    backgroundImage: NetworkImage(
+                      data['imageUrl'],
+                    ),
                   ),
-                ),
+                ],
               ),
-            );
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('$e'),
-            duration: const Duration(
-              seconds: 3,
             ),
           ),
-        );
-      }
-    }
+        ],
+      ),
+    );
+  }
+}
+
+class ReceivedMessage extends StatelessWidget {
+  const ReceivedMessage({
+    Key? key,
+    required this.data,
+  }) : super(key: key);
+
+  final Map<String, dynamic> data;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(4.0),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Container(
+            constraints: chatConstraints,
+            padding: const EdgeInsets.only(
+              left: 5.0,
+              top: 5.0,
+              bottom: 5.0,
+              right: 10.0,
+            ),
+            decoration: const BoxDecoration(
+              gradient: received,
+              borderRadius: round,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircleAvatar(
+                  radius: 20,
+                  backgroundImage: NetworkImage(
+                    data['imageUrl'],
+                  ),
+                ),
+                const SizedBox(width: 10.0),
+                Flexible(
+                  child: Text(
+                    data['text'],
+                    textAlign: TextAlign.left,
+                    style: chatText,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(), // Dynamic width spacer
+        ],
+      ),
+    );
   }
 }
