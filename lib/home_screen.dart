@@ -7,7 +7,6 @@ import 'package:firechat/loading.dart';
 import 'package:firechat/styles.dart';
 import 'package:flutter/widgets.dart';
 
-
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
@@ -22,22 +21,18 @@ class HomeScreen extends StatelessWidget {
           style: appBarTheme,
         ),
         actions: <Widget>[
-          Builder(
-            builder: (BuildContext context) {
-              return TextButton(
-                child: const Text(
-                  'Sign out',
-                  style: blackText,
-                ),
-                onPressed: () {
-                  AuthProvider().signOut();
+          TextButton(
+            child: const Text(
+              'Sign out',
+              style: blackText,
+            ),
+            onPressed: () {
+              AuthProvider().signOut();
 
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('User was signed out'),
-                    ),
-                  );
-                },
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('User was signed out'),
+                ),
               );
             },
           ),
@@ -117,8 +112,6 @@ class Chats extends StatelessWidget {
       },
     );
   }
-
-
 }
 
 class SentMessage extends StatelessWidget {
